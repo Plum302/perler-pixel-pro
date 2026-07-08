@@ -536,8 +536,8 @@ function mkLic(oid){const s=LS+':'+String(oid).trim();let h=0;for(let i=0;i<s.le
   return 'PD-'+hex.slice(0,4)+'-'+hex.slice(4,8)+'-'+id}
 function valLic(k){if(!k)return null;const key=k.trim().toUpperCase()
   if(!/^PD-[A-F0-9]{4}-[A-F0-9]{4}-\d{4}$/.test(key))return null;const o=key.split('-')[3];return key===mkLic(o)?o:null}
-function gLic(){try{const r=localStorage.getItem('pd_license');return r?JSON.parse(r):null}catch{return null}}
-function sLic(s){try{localStorage.setItem('pd_license',JSON.stringify(s))}catch{}}
+function gLic(){try{const r=sessionStorage.getItem('pd_license');return r?JSON.parse(r):null}catch{return null}}
+function sLic(s){try{sessionStorage.setItem('pd_license',JSON.stringify(s))}catch{}}
 function gUsed(){try{const r=localStorage.getItem('pd_used_keys');return r?JSON.parse(r):[]}catch{return[]}}
 function aUsed(k){const u=gUsed();if(!u.includes(k)){u.push(k);try{localStorage.setItem('pd_used_keys',JSON.stringify(u))}catch{}}}
 function isUnlocked(){const s=gLic();return s&&s.unlocked===true}
@@ -559,8 +559,8 @@ function genKey(){const o=document.getElementById('adminOrder').value.trim()
   const l=document.getElementById('adminLog');const d=document.createElement('div');d.textContent=new Date().toLocaleString()+' 订单'+o+'='+key;l.prepend(d)}
 function copyKey(el){const t=el.textContent;if(navigator.clipboard){navigator.clipboard.writeText(t).then(()=>{el.textContent='已复制!';setTimeout(()=>{el.textContent=t},1500)})}}
 function contactBuy(){document.getElementById('licError').textContent='请联系作者微信/QQ 获取密码'}
-// Init on load
-window.addEventListener('DOMContentLoaded',function(){if(location.search.match(/[?&](dev|admin)/)){try{localStorage.setItem('pd_dev','1')}catch{}}const dv=(function(){try{return localStorage.getItem('pd_dev')==='1'}catch{return false}})();if(dv||isUnlocked()){document.getElementById('lockScreen').classList.add('hidden')}else{document.getElementById('lockScreen').classList.remove('hidden')}});
+// Init
+(function(){if(location.search.match(/[?&](dev|admin)/)){try{sessionStorage.setItem('pd_dev','1')}catch{}}const dv=(function(){try{return sessionStorage.getItem('pd_dev')==='1'}catch{return false}})();if(dv||isUnlocked()){document.getElementById('lockScreen').classList.add('hidden')}else{document.getElementById('lockScreen').classList.remove('hidden')}})();
 </script>
 <div class="lic-overlay" id="lockScreen">
   <div class="lic-box">
@@ -598,6 +598,7 @@ window.addEventListener('DOMContentLoaded',function(){if(location.search.match(/
 <div class="lic-dev" id="devBtn" title="管理员入口（Ctrl+Shift+K）">🔧</div>
 </body>
 </html>
+
 
 
 
