@@ -434,13 +434,13 @@ function draw(exportMode){
     for(let x=0;x<=pattern.width;x++){
       const mj=gm==='major'&&x%5===0;
       ctx.strokeStyle=mj?'#1f2937':'rgba(23,32,42,.15)';
-      ctx.lineWidth=mj?1.4:.6;
+      ctx.lineWidth=mj?2:.6;
       ctx.beginPath();ctx.moveTo(margin+x*cell+.5,margin);ctx.lineTo(margin+x*cell+.5,ey);ctx.stroke()
     }
     for(let y=0;y<=pattern.height;y++){
       const mj=gm==='major'&&y%5===0;
       ctx.strokeStyle=mj?'#1f2937':'rgba(23,32,42,.15)';
-      ctx.lineWidth=mj?1.4:.6;
+      ctx.lineWidth=mj?2:.6;
       ctx.beginPath();ctx.moveTo(margin,margin+y*cell+.5);ctx.lineTo(ex,margin+y*cell+.5);ctx.stroke()
     }
   }
@@ -598,6 +598,7 @@ window.addEventListener('DOMContentLoaded',function(){if(location.search.match(/
 <div class="lic-dev" id="devBtn" title="管理员入口（Ctrl+Shift+K）">🔧</div>
 </body>
 </html>
+
 
 
 
