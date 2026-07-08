@@ -1,0 +1,613 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0f766e">
+<title>拼豆像素画 · 图片转拼豆图纸</title>
+<style>
+:root{--bg:linear-gradient(180deg,#eef4ef 0%,#f7f3ec 100%);--panel:rgba(255,255,255,.96);--ink:#1d2733;--muted:#5f6e7e;--line:#d9e1e7;--accent:#0f766e;--accent-strong:#115e59;--accent-soft:#dff4f0;--shadow:0 18px 45px rgba(22,33,46,.1)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{margin:0;min-height:100vh;color:var(--ink);background:var(--bg);font-family:"Segoe UI","PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.app-shell{width:min(1480px,calc(100vw - 32px));margin:0 auto;padding:24px 0 32px}
+.topbar{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin-bottom:18px}
+.title-block{min-width:0}
+.eyebrow{margin:0 0 8px;color:var(--accent);font-size:12px;font-weight:800;text-transform:uppercase}
+h1{font-size:clamp(28px,4vw,42px);line-height:1.04;margin:0}
+h2{margin:0;font-size:18px}
+.subcopy{margin-top:8px;color:var(--muted);font-size:15px}
+.workspace{display:grid;grid-template-columns:340px minmax(0,1fr);gap:18px;align-items:start}
+.panel,.preview-panel{background:var(--panel);border:1px solid rgba(217,225,231,.95);border-radius:12px;box-shadow:var(--shadow)}
+.controls-panel{position:sticky;top:14px;padding:18px}
+.upload-box{display:grid;place-items:center;gap:8px;min-height:160px;padding:18px;border:2px dashed #b8d0cb;border-radius:12px;background:linear-gradient(180deg,#fbfffe 0%,#f3fbf9 100%);color:var(--muted);text-align:center;transition:border-color .18s,background .18s,transform .18s}
+.upload-box.dragging{border-color:var(--accent);background:var(--accent-soft);transform:translateY(-1px)}
+.upload-box input.native-file{width:100%;max-width:280px;min-height:44px;margin-top:8px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink)}
+.upload-icon{display:grid;place-items:center;width:48px;height:48px;border-radius:999px;background:var(--accent);color:#fff;font-size:28px;line-height:1}
+.upload-box strong{color:var(--ink);font-size:18px}
+.control-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px}
+.field{display:grid;gap:8px;min-width:0;color:var(--muted);font-size:13px;font-weight:700}
+.field input,.field select{width:100%;min-height:44px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink);padding:0 12px}
+.field input[type=range]{padding:0;accent-color:var(--accent);height:6px}
+.switch-row{display:grid;gap:10px;margin:18px 0;color:var(--ink);font-size:14px}
+.switch-row label{display:flex;align-items:center;gap:10px}
+.switch-row input{accent-color:var(--accent);width:18px;height:18px}
+.actions{display:grid;grid-template-columns:1fr;gap:10px}
+.btn{min-height:46px;border:0;border-radius:10px;font-weight:800;padding:0 18px;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent-strong)}
+.btn-secondary{border:1px solid var(--accent);background:#fff;color:var(--accent-strong)}
+.btn-secondary:disabled{cursor:not-allowed;border-color:var(--line);color:#97a3b1}
+.btn-ghost{padding:0 18px;border:1px solid var(--line);background:rgba(255,255,255,.85);color:var(--muted);min-height:46px;border-radius:10px;font-weight:800}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+.stats div{min-height:72px;padding:12px;border:1px solid var(--line);border-radius:10px;background:#fcfdfd}
+.stats span{display:block;color:var(--muted);font-size:12px}
+.stats strong{display:block;margin-top:8px;font-size:18px}
+.preview-panel{min-width:0;overflow:hidden}
+.preview-toolbar{display:flex;justify-content:space-between;gap:16px;align-items:center;padding:18px 18px 14px;border-bottom:1px solid var(--line)}
+.preview-toolbar p{margin-top:5px;color:var(--muted);font-size:14px}
+.mobile-tip{padding:10px 18px 0;color:var(--muted);font-size:13px}
+.zoom-tools{display:grid;grid-template-columns:40px 68px 40px;align-items:center;border:1px solid var(--line);border-radius:10px;overflow:hidden;flex-shrink:0}
+.zoom-tools button,.zoom-tools span{height:40px;display:grid;place-items:center;border:0;background:#fff;color:var(--ink)}
+.zoom-tools span{border-inline:1px solid var(--line);color:var(--muted);font-size:13px;font-weight:800}
+.canvas-stage{position:relative;min-height:calc(100vh - 210px);max-height:calc(100vh - 210px);overflow:auto;padding:14px;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;background:linear-gradient(45deg,#edf2f7 25%,transparent 25%),linear-gradient(-45deg,#edf2f7 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#edf2f7 75%),linear-gradient(-45deg,transparent 75%,#edf2f7 75%);background-position:0 0,0 10px,10px -10px,-10px 0;background-size:20px 20px}
+#patternCanvas{display:block;margin:0 auto;max-width:none;border:1px solid #c8d0dc;background:#fff;transform-origin:top center;touch-action:pan-x pan-y}
+.empty-state{position:absolute;inset:0;display:grid;place-content:center;gap:8px;padding:24px;color:var(--muted);text-align:center}
+.empty-state strong{color:var(--ink);font-size:22px}
+.empty-state.hidden{display:none}
+.Toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#1d2733;color:#fff;padding:12px 24px;border-radius:10px;font-size:13px;z-index:200;opacity:0;transition:all .35s;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.Toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(max-width:980px){
+  .app-shell{width:min(100%-20px,980px);padding-top:18px}
+  .workspace{grid-template-columns:1fr}
+  .controls-panel{position:static}
+  .canvas-stage{min-height:520px;max-height:72vh}
+}
+@media(max-width:680px){
+  .app-shell{width:min(100%-14px,700px);padding-bottom:22px}
+  .topbar,.preview-toolbar{flex-direction:column;align-items:stretch}
+  .topbar{margin-bottom:14px}
+  .subcopy{font-size:14px}
+  .control-grid,.stats{grid-template-columns:1fr}
+  .controls-panel,.preview-panel{border-radius:12px}
+  .controls-panel{padding:14px}
+  .preview-toolbar{padding:14px}
+  .mobile-tip{padding:8px 14px 0}
+  .zoom-tools{width:100%;grid-template-columns:1fr 72px 1fr}
+  .zoom-tools button,.zoom-tools span{height:44px}
+  .canvas-stage{min-height:420px;max-height:62vh;padding:10px}
+  .upload-box{min-height:140px}
+  .upload-box input{max-width:100%}
+  .empty-state strong{font-size:20px}
+}
+.lic-overlay{position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,#0d1117 0%,#161b22 100%);display:flex;align-items:center;justify-content:center;overflow-y:auto;padding:20px}
+.lic-overlay.hidden{display:none}
+.lic-box{background:#1c2128;border:1px solid #30363d;border-radius:16px;padding:40px 36px;max-width:420px;width:100%;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.5)}
+.lic-box .logo{font-size:48px;margin-bottom:12px}
+.lic-box h2{font-size:22px;font-weight:700;color:#c9d1d9;margin-bottom:4px}
+.lic-box .sub{font-size:13px;color:#8b949e;margin-bottom:24px}
+.lic-box .sub b{color:#f78166}
+.lic-input{width:100%;padding:12px 16px;border:1px solid #30363d;border-radius:8px;background:#0d1117;color:#c9d1d9;font-size:15px;font-family:monospace;text-align:center;letter-spacing:1px;outline:none;transition:border-color .2s}
+.lic-input:focus{border-color:#f78166}
+.lic-input::placeholder{letter-spacing:0;color:#484f58}
+.lic-btn{width:100%;padding:12px;margin-top:12px;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;font-family:inherit}
+.lic-btn-primary{background:#f78166;color:#fff}
+.lic-btn-primary:hover{background:#e06b52;transform:translateY(-1px);box-shadow:0 4px 14px rgba(247,129,102,.3)}
+.lic-btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none!important;box-shadow:none!important}
+.lic-error{color:#f78166;font-size:13px;margin-top:10px;min-height:20px}
+.lic-success{color:#56d364;font-size:13px;margin-top:10px;min-height:20px}
+.lic-used{color:#8b949e;font-size:12px;margin-top:16px;padding-top:16px;border-top:1px solid #21262d}
+.lic-used a{color:#58a6ff;text-decoration:none}
+.lic-used a:hover{text-decoration:underline}
+.lic-dev{position:fixed;bottom:12px;right:16px;font-size:13px;color:#58a6ff;z-index:999999;cursor:pointer;padding:4px 8px;border-radius:4px;transition:color .2s}
+.lic-dev:hover{color:#c9d1d9;text-decoration:underline}
+.admin-panel{position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:20px}
+.admin-panel.show{display:flex}
+.admin-box{background:#1c2128;border:1px solid #30363d;border-radius:16px;padding:32px;max-width:480px;width:100%;max-height:90vh;overflow-y:auto}
+.admin-box h3{font-size:18px;color:#c9d1d9;margin-bottom:16px;text-align:center}
+.admin-field{display:block;width:100%;margin-bottom:12px}
+.admin-field label{display:block;font-size:12px;color:#8b949e;margin-bottom:4px}
+.admin-field input{width:100%;padding:10px 12px;border:1px solid #30363d;border-radius:8px;background:#0d1117;color:#c9d1d9;font-size:14px;font-family:monospace;outline:none}
+.admin-field input:focus{border-color:#58a6ff}
+.admin-key-result{background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:14px 16px;margin-top:12px;font-family:monospace;font-size:16px;color:#f78166;text-align:center;word-break:break-all;cursor:pointer;display:none;transition:all .2s}
+.admin-key-result:hover{background:#161b22}
+.admin-key-result.show{display:block}
+.admin-close{position:absolute;top:12px;right:16px;color:#8b949e;font-size:24px;cursor:pointer;background:none;border:none;font-family:inherit}
+.admin-close:hover{color:#c9d1d9}
+.admin-log{font-size:11px;color:#484f58;margin-top:12px;max-height:150px;overflow-y:auto}
+.admin-log div{padding:2px 0}
+</style>
+</head>
+<body>
+<div class="Toast" id="toast"></div>
+<main class="app-shell">
+  <header class="topbar">
+    <div class="title-block">
+      <p class="eyebrow">Perler Bead Pattern Maker</p>
+      <h1>🧩 拼豆像素画</h1>
+      <p class="subcopy">上传图片，自动生成 MARD 拼豆色号点阵图纸。</p>
+    </div>
+    <button class="btn-ghost" id="resetBtn" type="button">重置</button>
+  </header>
+
+  <section class="workspace">
+    <aside class="panel controls-panel">
+      <div class="upload-box" id="dropZone">
+        <span class="upload-icon">+</span>
+        <strong>上传图片</strong>
+        <span>支持 PNG、JPG、WebP，也可拖拽或粘贴</span>
+        <input id="fileInput" class="native-file" type="file" accept="image/*">
+      </div>
+
+      <div class="control-grid">
+        <label class="field">
+          <span>横向豆数</span>
+          <input id="gridWidth" type="number" min="8" max="220" step="1" value="48">
+        </label>
+        <label class="field">
+          <span>豆子规格</span>
+          <select id="beadSize">
+            <option value="5">5mm 通用拼豆</option>
+            <option value="2">2mm 迷你拼豆</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>色卡</span>
+          <select id="paletteSelect">
+            <option value="mard" selected>MARD 221 色（标准）</option>
+            <option value="classic">经典 47 色</option>
+            <option value="vivid">鲜艳 20 色</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>网格线</span>
+          <select id="gridMode">
+            <option value="major">每 5 格加粗</option>
+            <option value="full">完整细网格</option>
+            <option value="none">隐藏网格</option>
+          </select>
+        </label>
+        <label class="field" style="grid-column:1/-1">
+          <span>色彩还原 <span id="strengthVal">78%</span></span>
+          <input id="colorStrength" type="range" min="0" max="100" value="78">
+        </label>
+        <label class="field" style="grid-column:1/-1">
+          <span>背景过滤</span>
+          <input id="alphaCutoff" type="range" min="0" max="100" value="8">
+        </label>
+      </div>
+
+      <div class="switch-row">
+        <label><input id="showNumbers" type="checkbox" checked> 显示颜色编号</label>
+        <label><input id="showLegend" type="checkbox" checked> 导出用量表</label>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-primary" id="generateBtn">生成拼豆图纸</button>
+        <button class="btn btn-secondary" id="downloadBtn" disabled>下载高清 PNG</button>
+      </div>
+
+      <div class="stats" id="stats">
+        <div><span>尺寸</span><strong>-</strong></div>
+        <div><span>豆数</span><strong>-</strong></div>
+        <div><span>实物大小</span><strong>-</strong></div>
+        <div><span>颜色</span><strong>-</strong></div>
+      </div>
+    </aside>
+
+    <section class="preview-panel">
+      <div class="preview-toolbar">
+        <div>
+          <h2>图纸预览</h2>
+          <p id="statusText">上传图片后自动生成 MARD 标准色号点阵。</p>
+        </div>
+        <div class="zoom-tools">
+          <button id="zoomOut" title="缩小">-</button>
+          <span id="zoomLabel">100%</span>
+          <button id="zoomIn" title="放大">+</button>
+        </div>
+      </div>
+      <div class="mobile-tip">可拖动画布查看细节，使用缩放按钮调整比例。</div>
+      <div class="canvas-stage" id="canvasStage">
+        <canvas id="patternCanvas"></canvas>
+        <div class="empty-state" id="emptyState">
+          <strong>从一张照片开始</strong>
+          <span>上传后自动转为 MARD 221 色号网格，标注色号、统计用量。</span>
+        </div>
+      </div>
+    </section>
+  </section>
+</main>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+//  Palettes
+// ══════════════════════════════════════════════════════════════
+const PALETTES = {
+    mard: [
+  ['A1','基础','#FAF4C8'], ['A2','基础','#FFFFD5'], ['A3','基础','#FEFF8B'], ['A4','基础','#FBED56'], ['A5','基础','#F4D738'],
+  ['A6','基础','#FEAC4C'], ['A7','基础','#FE8B4C'], ['A8','基础','#FFDA45'], ['A9','基础','#FF995B'], ['A10','基础','#F77C31'],
+  ['A11','基础','#FFDD99'], ['A12','基础','#FE9F72'], ['A13','基础','#FFC365'], ['A14','基础','#FD543D'], ['A15','基础','#FFF365'],
+  ['A16','基础','#FFFF9F'], ['A17','基础','#FFE36E'], ['A18','基础','#FEBE7D'], ['A19','基础','#FD7C72'], ['A20','基础','#FFD568'],
+  ['A21','基础','#FFE395'], ['A22','基础','#F4F57D'], ['A23','基础','#E6C9B7'], ['A24','基础','#F7F8A2'], ['A25','基础','#FFD67D'],
+  ['A26','基础','#FFC830'],
+  ['B1','清新','#E6EE31'], ['B2','清新','#63F347'], ['B3','清新','#9EF780'], ['B4','清新','#5DE035'], ['B5','清新','#35E352'],
+  ['B6','清新','#65E2A6'], ['B7','清新','#3DAF80'], ['B8','清新','#1C9C4F'], ['B9','清新','#27523A'], ['B10','清新','#95D3C2'],
+  ['B11','清新','#5D722A'], ['B12','清新','#166F41'], ['B13','清新','#CAEB7B'], ['B14','清新','#ADE946'], ['B15','清新','#2E5132'],
+  ['B16','清新','#C5ED9C'], ['B17','清新','#9BB13A'], ['B18','清新','#E6EE49'], ['B19','清新','#24B88C'], ['B20','清新','#C2F0CC'],
+  ['B21','清新','#156A6B'], ['B22','清新','#0B3C43'], ['B23','清新','#303A21'], ['B24','清新','#EEFCA5'], ['B25','清新','#4E846D'],
+  ['B26','清新','#8D7A35'], ['B27','清新','#CCE1AF'], ['B28','清新','#9EE5B9'], ['B29','清新','#C5E254'], ['B30','清新','#E2FCB1'],
+  ['B31','清新','#B0E792'], ['B32','清新','#9CAB5A'],
+  ['C1','标准','#E8FFE7'], ['C2','标准','#A9F9FC'], ['C3','标准','#A0E2FB'], ['C4','标准','#41CCFF'], ['C5','标准','#01ACEB'],
+  ['C6','标准','#50AAF0'], ['C7','标准','#3677D2'], ['C8','标准','#0F54C0'], ['C9','标准','#324BCA'], ['C10','标准','#3EBCE2'],
+  ['C11','标准','#28DDDE'], ['C12','标准','#1C334D'], ['C13','标准','#CDE8FF'], ['C14','标准','#D5FDFF'], ['C15','标准','#22C4C6'],
+  ['C16','标准','#1557A8'], ['C17','标准','#04D1F6'], ['C18','标准','#1D3344'], ['C19','标准','#1887A2'], ['C20','标准','#176DAF'],
+  ['C21','标准','#BEDDFF'], ['C22','标准','#67B4BE'], ['C23','标准','#C8E2FF'], ['C24','标准','#7CC4FF'], ['C25','标准','#A9E5E5'],
+  ['C26','标准','#3CAED8'], ['C27','标准','#D3DFFA'], ['C28','标准','#BBCFED'], ['C29','标准','#34488E'],
+  ['D1','复古','#AEB4F2'], ['D2','复古','#858EDD'], ['D3','复古','#2F54AF'], ['D4','复古','#182A84'], ['D5','复古','#B843C5'],
+  ['D6','复古','#AC7BDE'], ['D7','复古','#8854B3'], ['D8','复古','#E2D3FF'], ['D9','复古','#D5B9F8'], ['D10','复古','#361851'],
+  ['D11','复古','#B9BAE1'], ['D12','复古','#DE9AD4'], ['D13','复古','#B90095'], ['D14','复古','#8B279B'], ['D15','复古','#2F1F90'],
+  ['D16','复古','#E3E1EE'], ['D17','复古','#C4D4F6'], ['D18','复古','#A45EC7'], ['D19','复古','#D8C3D7'], ['D20','复古','#9C32B2'],
+  ['D21','复古','#9A009B'], ['D22','复古','#333A95'], ['D23','复古','#EBDAFC'], ['D24','复古','#7786E5'], ['D25','复古','#494FC7'],
+  ['D26','复古','#DFC2F8'],
+  ['E1','粉彩','#FDD3CC'], ['E2','粉彩','#FEC0DF'], ['E3','粉彩','#FFB7E7'], ['E4','粉彩','#E8649E'], ['E5','粉彩','#F551A2'],
+  ['E6','粉彩','#F13D74'], ['E7','粉彩','#C63478'], ['E8','粉彩','#FFDBE9'], ['E9','粉彩','#E970CC'], ['E10','粉彩','#D33793'],
+  ['E11','粉彩','#FCDDD2'], ['E12','粉彩','#F78FC3'], ['E13','粉彩','#B5006D'], ['E14','粉彩','#FFD1BA'], ['E15','粉彩','#F8C7C9'],
+  ['E16','粉彩','#FFF3EB'], ['E17','粉彩','#FFE2EA'], ['E18','粉彩','#FFC7DB'], ['E19','粉彩','#FEBAD5'], ['E20','粉彩','#D8C7D1'],
+  ['E21','粉彩','#BD9DA1'], ['E22','粉彩','#B785A1'], ['E23','粉彩','#937A8D'], ['E24','粉彩','#E1BCE8'],
+  ['F1','亮色','#FD957B'], ['F2','亮色','#FC3D46'], ['F3','亮色','#F74941'], ['F4','亮色','#FC283C'], ['F5','亮色','#E7002F'],
+  ['F6','亮色','#943630'], ['F7','亮色','#971937'], ['F8','亮色','#BC0028'], ['F9','亮色','#E2677A'], ['F10','亮色','#8A4526'],
+  ['F11','亮色','#5A2121'], ['F12','亮色','#FD4E6A'], ['F13','亮色','#F35744'], ['F14','亮色','#FFA9AD'], ['F15','亮色','#D30022'],
+  ['F16','亮色','#FEC2A6'], ['F17','亮色','#E69C79'], ['F18','亮色','#D37C46'], ['F19','亮色','#C1444A'], ['F20','亮色','#CD9391'],
+  ['F21','亮色','#F7B4C6'], ['F22','亮色','#FDC0D0'], ['F23','亮色','#F67E66'], ['F24','亮色','#E698AA'], ['F25','亮色','#E54B4F'],
+  ['G1','夜光','#FFE2CE'], ['G2','夜光','#FFC4AA'], ['G3','夜光','#F4C3A5'], ['G4','夜光','#E1B383'], ['G5','夜光','#EDB045'],
+  ['G6','夜光','#E99C17'], ['G7','夜光','#9D5B3E'], ['G8','夜光','#753832'], ['G9','夜光','#E6B483'], ['G10','夜光','#D98C39'],
+  ['G11','夜光','#E0C593'], ['G12','夜光','#FFC890'], ['G13','夜光','#B7714A'], ['G14','夜光','#8D614C'], ['G15','夜光','#FCF9E0'],
+  ['G16','夜光','#F2D9BA'], ['G17','夜光','#78524B'], ['G18','夜光','#FFE4CC'], ['G19','夜光','#E07935'], ['G20','夜光','#A94023'],
+  ['G21','夜光','#B88558'],
+  ['H1','肤色','#FDFBFF'], ['H2','肤色','#FEFFFF'], ['H3','肤色','#B6B1BA'], ['H4','肤色','#89858C'], ['H5','肤色','#48464E'],
+  ['H6','肤色','#2F2B2F'], ['H7','肤色','#000000'], ['H8','肤色','#E7D6DB'], ['H9','肤色','#EDEDED'], ['H10','肤色','#EEE9EA'],
+  ['H11','肤色','#CECDD5'], ['H12','肤色','#FFF5ED'], ['H13','肤色','#F5ECD2'], ['H14','肤色','#CFD7D3'], ['H15','肤色','#98A6A8'],
+  ['H16','肤色','#1D1414'], ['H17','肤色','#F1EDED'], ['H18','肤色','#FFFDF0'], ['H19','肤色','#F6EFE2'], ['H20','肤色','#949FA3'],
+  ['H21','肤色','#FFFBE1'], ['H22','肤色','#CACAD4'], ['H23','肤色','#9A9D94'],
+  ['M1','金属','#BCC6B8'], ['M2','金属','#8AA386'], ['M3','金属','#697D80'], ['M4','金属','#E3D2BC'], ['M5','金属','#D0CCAA'],
+  ['M6','金属','#B0A782'], ['M7','金属','#B4A497'], ['M8','金属','#B38281'], ['M9','金属','#A58767'], ['M10','金属','#C5B2BC'],
+  ['M11','金属','#9F7594'], ['M12','金属','#644749'], ['M13','金属','#D19066'], ['M14','金属','#C77362'], ['M15','金属','#757D78'],
+  ],classic: [
+    ['01','白','#f7f6ef'],['02','奶油','#fff0b8'],['03','浅黄','#fdf4a8'],['04','柠檬黄','#fae100'],['05','金黄','#f5a623'],
+    ['06','橙黄','#f59e1a'],['07','橙色','#f58a1a'],['08','桔红','#f07128'],['09','珊瑚','#e86a6a'],['10','浅粉','#fcc9d4'],
+    ['11','粉红','#f8a4b8'],['12','玫红','#e85d8a'],['13','红','#e53935'],['14','深红','#c62828'],['15','酒红','#8e1a2b'],
+    ['16','浅紫','#d1b3e0'],['17','紫','#9c27b0'],['18','深紫','#6a1b9a'],['19','淡蓝','#b3d9f2'],['20','天蓝','#64b5f6'],
+    ['21','蓝','#2196f3'],['22','深蓝','#1565c0'],['23','藏青','#0d47a1'],['24','孔雀蓝','#00838f'],['25','青','#00acc1'],
+    ['26','薄荷','#a5d6a7'],['27','浅绿','#81c784'],['28','草绿','#66bb6a'],['29','绿','#43a047'],['30','深绿','#2e7d32'],
+    ['31','墨绿','#1b5e20'],['32','橄榄','#7d8a3a'],['33','卡其','#c0a070'],['34','浅棕','#b8956a'],['35','棕','#8d6e63'],
+    ['36','深棕','#5d4037'],['37','咖啡','#3e2723'],['38','浅灰','#cfd8dc'],['39','灰','#90a4ae'],['40','中灰','#607d8b'],
+    ['41','深灰','#455a64'],['42','炭灰','#263238'],['43','黑','#1a1a1a'],['44','金属银','#b0bec5'],['45','荧光粉','#ff4081'],
+    ['46','荧光绿','#76ff03'],['47','荧光橙','#ff9100'],
+  ],
+};
+
+function hexToRgb(h){const v=h.replace('#','');return{r:parseInt(v.slice(0,2),16),g:parseInt(v.slice(2,4),16),b:parseInt(v.slice(4,6),16)}}
+
+const PREPARED = {};
+for(const[k,v]of Object.entries(PALETTES)){PREPARED[k]=v.map(([c,n,h])=>({code:c,name:n,hex:h,...hexToRgb(h)}))}
+
+// ══════════════════════════════════════════════════════════════
+//  DOM
+// ══════════════════════════════════════════════════════════════
+const $=id=>document.getElementById(id);
+const canvas=$('patternCanvas'),ctx=canvas.getContext('2d',{willReadFrequently:true});
+const canvasStage=$('canvasStage'),fileInput=$('fileInput'),dropZone=$('dropZone');
+const gridWidthInput=$('gridWidth'),beadSizeInput=$('beadSize'),paletteSelect=$('paletteSelect');
+const gridModeInput=$('gridMode'),colorStrengthInput=$('colorStrength'),alphaCutoffInput=$('alphaCutoff');
+const showNumbersInput=$('showNumbers'),showLegendInput=$('showLegend');
+const generateBtn=$('generateBtn'),downloadBtn=$('downloadBtn'),resetBtn=$('resetBtn');
+const stats=$('stats'),statusText=$('statusText'),emptyState=$('emptyState');
+const zoomOut=$('zoomOut'),zoomIn=$('zoomIn'),zoomLabel=$('zoomLabel'),toast=$('toast');
+
+let srcImg=null,pattern=null,zoom=1,toastT=null;
+
+function toastMsg(m){toast.textContent=m;toast.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>toast.classList.remove('show'),2500)}
+function clamp(v,mi,ma){return Math.min(ma,Math.max(mi,v))}
+function setZoom(z){zoom=clamp(Number(z.toFixed(2)),.35,2.5);canvas.style.transform='scale('+zoom+')';zoomLabel.textContent=Math.round(zoom*100)+'%'}
+function fitZoom(){
+  if(!pattern||!canvasStage)return;
+  const aw=canvasStage.clientWidth-28;
+  if(aw<=0||canvas.width<=0)return;
+  const f=Math.min(1,aw/canvas.width);
+  setZoom(window.innerWidth<=680?Math.max(f,.45):1)
+}
+function totalBeads(){return Array.from(pattern.counts.values()).reduce((s,c)=>s+c,0)}
+
+function enhanceColor(c,str){
+  const f=.55+str/100,avg=(c.r+c.g+c.b)/3;
+  return{r:clamp(Math.round(avg+(c.r-avg)*f),0,255),g:clamp(Math.round(avg+(c.g-avg)*f),0,255),b:clamp(Math.round(avg+(c.b-avg)*f),0,255)}
+}
+
+function colorDist(a,b){
+  const rm=(a.r+b.r)/2,r=a.r-b.r,g=a.g-b.g,bl=a.b-b.b;
+  return Math.sqrt((2+rm/256)*r*r+4*g*g+(2+(255-rm)/256)*bl*bl)
+}
+
+function nearest(rgb,palette){
+  let bC=palette[0],bS=Infinity;
+  for(const c of palette){const s=colorDist(rgb,c);if(s<bS){bS=s;bC=c}}
+  return bC
+}
+
+function textCol(r,g,b){return(r*299+g*587+b*114)/1000>155?'#17202a':'#ffffff'}
+
+// ══════════════════════════════════════════════════════════════
+//  Image loading
+// ══════════════════════════════════════════════════════════════
+function readFile(file){
+  return new Promise((res,rej)=>{
+    const r=new FileReader();
+    r.onload=()=>{const i=new Image();i.onload=()=>res(i);i.onerror=()=>rej(new Error('图片加载失败'));i.src=r.result}
+    r.onerror=()=>rej(new Error('文件读取失败'));r.readAsDataURL(file)
+  })
+}
+
+async function handleFile(file){
+  if(!file||!file.type.startsWith('image/'))return
+  statusText.textContent='正在读取图片...';
+  try{srcImg=await readFile(file);makePattern()}catch(e){statusText.textContent=e.message}
+}
+
+// ══════════════════════════════════════════════════════════════
+//  Core processing
+// ══════════════════════════════════════════════════════════════
+function makePattern(){
+  if(!srcImg){statusText.textContent='请先上传一张图片。';return}
+  
+  const tw=clamp(Number(gridWidthInput.value)||48,8,220);
+  gridWidthInput.value=tw;
+  const th=clamp(Math.round(tw*srcImg.height/srcImg.width),8,260);
+  const palette=PREPARED[paletteSelect.value];
+  const strength=Number(colorStrengthInput.value);
+  const cutoff=Number(alphaCutoffInput.value)/100;
+  document.getElementById('strengthVal').textContent=strength+'%';
+  
+  const sp=document.createElement('canvas');
+  sp.width=tw;sp.height=th;
+  const sx=sp.getContext('2d',{willReadFrequently:true});
+  sx.imageSmoothingEnabled=true;sx.imageSmoothingQuality='high';
+  sx.clearRect(0,0,tw,th);sx.drawImage(srcImg,0,0,tw,th);
+  
+  const px=sx.getImageData(0,0,tw,th).data;
+  const cells=[];const counts=new Map();
+  
+  for(let y=0;y<th;y++){
+    const row=[];
+    for(let x=0;x<tw;x++){
+      const i=(y*tw+x)*4,alpha=px[i+3]/255;
+      const raw={r:px[i],g:px[i+1],b:px[i+2]};
+      const wt=255-cutoff*88;
+      const nearW=raw.r>=wt&&raw.g>=wt&&raw.b>=wt;
+      const lowC=Math.max(raw.r,raw.g,raw.b)-Math.min(raw.r,raw.g,raw.b)<=8;
+      if(alpha<=cutoff||(cutoff>0&&nearW&&lowC)){row.push(null);continue}
+      const m=nearest(enhanceColor(raw,strength),palette);
+      row.push(m);counts.set(m.code,(counts.get(m.code)||0)+1)
+    }
+    cells.push(row)
+  }
+  
+  pattern={width:tw,height:th,cells,counts,palette,beadSize:Number(beadSizeInput.value)};
+  draw();updateStats();fitZoom();
+  emptyState.classList.add('hidden');
+  downloadBtn.disabled=false;
+  statusText.textContent='已生成拼豆点阵，可继续调节参数或下载图纸。'
+}
+
+// ══════════════════════════════════════════════════════════════
+//  Drawing
+// ══════════════════════════════════════════════════════════════
+function draw(exportMode){
+  if(!pattern){ctx.clearRect(0,0,canvas.width,canvas.height);return}
+  
+  const showLegend=exportMode?showLegendInput.checked:false;
+  const cell=exportMode?28:clamp(Math.floor(760/pattern.width),10,24);
+  const margin=exportMode?56:24;
+  const legendW=showLegend?300:0;
+  const w=margin*2+pattern.width*cell+legendW;
+  const h=margin*2+pattern.height*cell;
+  
+  canvas.width=w;canvas.height=h;
+  ctx.fillStyle='#ffffff';ctx.fillRect(0,0,w,h);
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  
+  for(let y=0;y<pattern.height;y++)for(let x=0;x<pattern.width;x++){
+    const c=pattern.cells[y][x],px=margin+x*cell,py=margin+y*cell;
+    ctx.fillStyle=c?c.hex:'#ffffff';ctx.fillRect(px,py,cell,cell);
+    if(c&&showNumbersInput.checked&&cell>=14){
+      const tc=textCol(c.r,c.g,c.b);ctx.fillStyle=tc;
+      ctx.font='bold '+Math.max(8,Math.floor(cell*.36))+'px "Courier New",monospace';
+      ctx.fillText(c.code,px+cell/2,py+cell/2)
+    }
+  }
+  
+  // Grid
+  const gm=gridModeInput.value;
+  if(gm!=='none'){
+    const ex=margin+pattern.width*cell,ey=margin+pattern.height*cell;
+    for(let x=0;x<=pattern.width;x++){
+      const mj=gm==='major'&&x%5===0;
+      ctx.strokeStyle=mj?'#1f2937':'rgba(23,32,42,.15)';
+      ctx.lineWidth=mj?1.4:.6;
+      ctx.beginPath();ctx.moveTo(margin+x*cell+.5,margin);ctx.lineTo(margin+x*cell+.5,ey);ctx.stroke()
+    }
+    for(let y=0;y<=pattern.height;y++){
+      const mj=gm==='major'&&y%5===0;
+      ctx.strokeStyle=mj?'#1f2937':'rgba(23,32,42,.15)';
+      ctx.lineWidth=mj?1.4:.6;
+      ctx.beginPath();ctx.moveTo(margin,margin+y*cell+.5);ctx.lineTo(ex,margin+y*cell+.5);ctx.stroke()
+    }
+  }
+  
+  if(showLegend)drawLegend(margin+pattern.width*cell+36,margin,cell)
+}
+
+function drawLegend(x,y,cell){
+  const entries=Array.from(pattern.counts.entries())
+    .map(([code,count])=>({...pattern.palette.find(i=>i.code===code),count}))
+    .sort((a,b)=>b.count-a.count);
+  
+  ctx.textAlign='left';ctx.textBaseline='alphabetic';
+  ctx.fillStyle='#17202a';ctx.font='700 22px "PingFang SC",sans-serif';ctx.fillText('颜色用量',x,y+6);
+  ctx.font='14px sans-serif';ctx.fillStyle='#647084';
+  ctx.fillText(pattern.width+'×'+pattern.height+'格 共'+totalBeads()+'颗',x,y+32);
+  let ry=y+60;
+  for(const item of entries){
+    ctx.fillStyle=item.hex;ctx.fillRect(x,ry-16,22,22);
+    ctx.strokeStyle='#d7dde7';ctx.strokeRect(x,ry-16,22,22);
+    ctx.fillStyle='#17202a';ctx.font='700 13px Arial,sans-serif';ctx.fillText(item.code,x+30,ry-1);
+    ctx.font='13px sans-serif';ctx.fillText(item.name+'  '+item.count+'颗',x+62,ry-1);
+    ry+=30;if(ry>canvas.height-24){ctx.fillStyle='#647084';ctx.fillText('更多颜色请放大图纸查看',x,ry);break}
+  }
+  ctx.textAlign='center';ctx.textBaseline='middle'
+}
+
+function updateStats(){
+  const rw=(pattern.width*pattern.beadSize/10).toFixed(1);
+  const rh=(pattern.height*pattern.beadSize/10).toFixed(1);
+  const vals=[pattern.width+'×'+pattern.height,totalBeads()+'颗',rw+'×'+rh+' cm',pattern.counts.size+'色'];
+  stats.querySelectorAll('strong').forEach((n,i)=>{n.textContent=vals[i]})
+}
+
+// ══════════════════════════════════════════════════════════════
+//  Download
+// ══════════════════════════════════════════════════════════════
+function downloadPng(){
+  if(!pattern)return;
+  draw(true);
+  const a=document.createElement('a');
+  a.download='拼豆图纸_'+pattern.width+'x'+pattern.height+'.png';
+  a.href=canvas.toDataURL('image/png');a.click();
+  toastMsg('✅ 图纸下载成功！');
+  draw(false);fitZoom()
+}
+
+// ══════════════════════════════════════════════════════════════
+//  Reset
+// ══════════════════════════════════════════════════════════════
+function resetAll(){
+  srcImg=null;pattern=null;fileInput.value='';
+  gridWidthInput.value=48;beadSizeInput.value='5';
+  paletteSelect.value='mard';gridModeInput.value='major';
+  colorStrengthInput.value=78;alphaCutoffInput.value=8;
+  showNumbersInput.checked=true;showLegendInput.checked=true;
+  document.getElementById('strengthVal').textContent='78%';
+  downloadBtn.disabled=true;
+  emptyState.classList.remove('hidden');
+  statusText.textContent='上传图片后自动生成 MARD 标准色号点阵。';
+  stats.querySelectorAll('strong').forEach(n=>{n.textContent='-'});
+  ctx.clearRect(0,0,canvas.width,canvas.height);setZoom(1)
+}
+
+// ══════════════════════════════════════════════════════════════
+//  Events
+// ══════════════════════════════════════════════════════════════
+fileInput.addEventListener('change',e=>handleFile(e.target.files[0]));
+generateBtn.addEventListener('click',makePattern);
+downloadBtn.addEventListener('click',downloadPng);
+resetBtn.addEventListener('click',resetAll);
+
+[gridWidthInput,beadSizeInput,paletteSelect,gridModeInput,colorStrengthInput,alphaCutoffInput,showNumbersInput,showLegendInput]
+  .forEach(el=>el.addEventListener('input',()=>{if(srcImg)makePattern()}));
+
+dropZone.addEventListener('dragover',e=>{e.preventDefault();e.stopPropagation();dropZone.classList.add('dragging')});
+dropZone.addEventListener('dragleave',()=>dropZone.classList.remove('dragging'));
+dropZone.addEventListener('drop',e=>{e.preventDefault();e.stopPropagation();dropZone.classList.remove('dragging');handleFile(e.dataTransfer.files[0])});
+window.addEventListener('dragover',e=>{e.preventDefault();dropZone.classList.add('dragging')});
+window.addEventListener('drop',e=>{e.preventDefault();dropZone.classList.remove('dragging');handleFile(e.dataTransfer.files[0])});
+window.addEventListener('paste',e=>{const f=Array.from(e.clipboardData?.files||[]).find(i=>i.type.startsWith('image/'));if(f)handleFile(f)});
+
+zoomOut.addEventListener('click',()=>setZoom(zoom-.1));
+zoomIn.addEventListener('click',()=>setZoom(zoom+.1));
+window.addEventListener('resize',()=>{if(pattern)fitZoom()});
+
+resetAll();
+
+// License System - onclick based
+const LS = 'p3rl3r_p1x_2024';
+function mkLic(oid){const s=LS+':'+String(oid).trim();let h=0;for(let i=0;i<s.length;i++){h=((h<<5)-h)+s.charCodeAt(i);h|=0}
+  const hex=Math.abs(h).toString(16).toUpperCase().padStart(8,'0');const id=String(oid).trim().padStart(4,'0').slice(-4)
+  return 'PD-'+hex.slice(0,4)+'-'+hex.slice(4,8)+'-'+id}
+function valLic(k){if(!k)return null;const key=k.trim().toUpperCase()
+  if(!/^PD-[A-F0-9]{4}-[A-F0-9]{4}-\d{4}$/.test(key))return null;const o=key.split('-')[3];return key===mkLic(o)?o:null}
+function gLic(){try{const r=localStorage.getItem('pd_license');return r?JSON.parse(r):null}catch{return null}}
+function sLic(s){try{localStorage.setItem('pd_license',JSON.stringify(s))}catch{}}
+function gUsed(){try{const r=localStorage.getItem('pd_used_keys');return r?JSON.parse(r):[]}catch{return[]}}
+function aUsed(k){const u=gUsed();if(!u.includes(k)){u.push(k);try{localStorage.setItem('pd_used_keys',JSON.stringify(u))}catch{}}}
+function isUnlocked(){const s=gLic();return s&&s.unlocked===true}
+function doUnlock(){const i=document.getElementById('licInput'),e=document.getElementById('licError'),s=document.getElementById('licSuccess')
+  e.textContent='';s.textContent='';const k=i.value.trim().toUpperCase()
+  if(!k){e.textContent='请输入密码';return}const o=valLic(k);if(!o){e.textContent='密码无效';return}
+  if(gUsed().includes(k)){e.textContent='此密码已被使用';return}
+  sLic({unlocked:true,key:k,orderId:o});aUsed(k)
+  s.textContent='解锁成功!';document.getElementById('lockScreen').classList.add('hidden');location.reload()}
+function formatLicInput(el){let v=el.value.toUpperCase().replace(/[^A-F0-9-]/g,'');const p=v.split('-')
+  if(p[0]==='PD'&&p.length>1){if(p[1]&&p[1].length>4){p[2]=(p[1].slice(4)+(p[2]||'')).slice(0,4);p[1]=p[1].slice(0,4)}
+    if(p[2]&&p[2].length>4){p[3]=(p[2].slice(4)+(p[3]||'')).slice(0,4);p[2]=p[2].slice(0,4)}
+    if(p[3]&&p[3].length>4)p[3]=p[3].slice(0,4);el.value=p.join('-')}else if(p[0]!=='PD')el.value=''}
+function openAdmin(){const ap=document.getElementById('adminPanel');ap.classList.add('show');document.getElementById('adminOrder').focus()}
+function closeAdmin(){document.getElementById('adminPanel').classList.remove('show')}
+function genKey(){const o=document.getElementById('adminOrder').value.trim()
+  if(!o||!/^\d+$/.test(o)){const r=document.getElementById('adminResult');r.textContent='请输入有效数字订单号';r.classList.add('show');return}
+  const key=mkLic(o);const r=document.getElementById('adminResult');r.textContent=key;r.classList.add('show')
+  const l=document.getElementById('adminLog');const d=document.createElement('div');d.textContent=new Date().toLocaleString()+' 订单'+o+'='+key;l.prepend(d)}
+function copyKey(el){const t=el.textContent;if(navigator.clipboard){navigator.clipboard.writeText(t).then(()=>{el.textContent='已复制!';setTimeout(()=>{el.textContent=t},1500)})}}
+function contactBuy(){document.getElementById('licError').textContent='请联系作者微信/QQ 获取密码'}
+// Init on load
+window.addEventListener('DOMContentLoaded',function(){if(!isUnlocked()){document.getElementById('lockScreen').classList.remove('hidden')}});
+</script>
+<div class="lic-overlay" id="lockScreen">
+  <div class="lic-box">
+    <div class="logo">🧩</div>
+    <h2>拼豆像素画</h2>
+    <p class="sub">请输入密码解锁使用</p>
+    <input class="lic-input" id="licInput" type="text" placeholder="PD-XXXX-XXXX-XXXX" maxlength="19" autocomplete="off" spellcheck="false" oninput="formatLicInput(this)">
+    <button class="lic-btn lic-btn-primary" onclick="doUnlock()">🔓 解锁</button>
+    <div class="lic-error" id="licError"></div>
+    <div class="lic-success" id="licSuccess"></div>
+    <div class="lic-used" style="border:none;margin-top:12px;padding-top:8px">
+      <a href="#" onclick="openAdmin();return false" style="color:#58a6ff">🔧 管理员入口</a>
+    </div>
+    <div class="lic-used">
+      <span>未购买？</span>
+      <a href="#" onclick="contactBuy();return false">联系购买 →</a>
+    </div>
+  </div>
+</div>
+<div class="admin-panel" id="adminPanel">
+  <button class="admin-close" onclick="closeAdmin()">&times;</button>
+  <div class="admin-box">
+    <h3>🔑 管理员 · 密码生成器</h3>
+    <div class="admin-field">
+      <label>订单号（纯数字）</label>
+      <input id="adminOrder" type="text" placeholder="例如 0001" maxlength="10" onkeydown="if(event.key==='Enter')genKey()">
+    </div>
+    <button class="lic-btn lic-btn-primary" onclick="genKey()" style="margin-bottom:12px">生成密码</button>
+    <div class="admin-key-result" id="adminResult" onclick="copyKey(this)"></div>
+    <div class="admin-log" id="adminLog"></div>
+  </div>
+</div>
+<div class="lic-dev" id="devBtn" onclick="openAdmin()">🔧</div>
+</div>
+<div class="lic-dev" id="devBtn" title="管理员入口（Ctrl+Shift+K）">🔧</div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
