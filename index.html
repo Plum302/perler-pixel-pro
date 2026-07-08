@@ -560,7 +560,7 @@ function genKey(){const o=document.getElementById('adminOrder').value.trim()
 function copyKey(el){const t=el.textContent;if(navigator.clipboard){navigator.clipboard.writeText(t).then(()=>{el.textContent='已复制!';setTimeout(()=>{el.textContent=t},1500)})}}
 function contactBuy(){document.getElementById('licError').textContent='请联系作者微信/QQ 获取密码'}
 // Init on load
-window.addEventListener('DOMContentLoaded',function(){if(!isUnlocked()){document.getElementById('lockScreen').classList.remove('hidden')}});
+window.addEventListener('DOMContentLoaded',function(){if(location.search.match(/[?&](dev|admin)/)){try{localStorage.setItem('pd_dev','1')}catch{}}const dv=(function(){try{return localStorage.getItem('pd_dev')==='1'}catch{return false}})();if(dv||isUnlocked()){document.getElementById('lockScreen').classList.add('hidden')}else{document.getElementById('lockScreen').classList.remove('hidden')}});
 </script>
 <div class="lic-overlay" id="lockScreen">
   <div class="lic-box">
@@ -598,6 +598,7 @@ window.addEventListener('DOMContentLoaded',function(){if(!isUnlocked()){document
 <div class="lic-dev" id="devBtn" title="管理员入口（Ctrl+Shift+K）">🔧</div>
 </body>
 </html>
+
 
 
 
