@@ -81,42 +81,9 @@ h2{margin:0;font-size:18px}
   .upload-box input{max-width:100%}
   .empty-state strong{font-size:20px}
 }
-.lic-overlay{position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,#0d1117 0%,#161b22 100%);display:flex;align-items:center;justify-content:center;overflow-y:auto;padding:20px}
-.lic-overlay.hidden{display:none}
-.lic-box{background:#1c2128;border:1px solid #30363d;border-radius:16px;padding:40px 36px;max-width:420px;width:100%;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.5)}
-.lic-box .logo{font-size:48px;margin-bottom:12px}
-.lic-box h2{font-size:22px;font-weight:700;color:#c9d1d9;margin-bottom:4px}
-.lic-box .sub{font-size:13px;color:#8b949e;margin-bottom:24px}
+
 .lic-box .sub b{color:#f78166}
-.lic-input{width:100%;padding:12px 16px;border:1px solid #30363d;border-radius:8px;background:#0d1117;color:#c9d1d9;font-size:15px;font-family:monospace;text-align:center;letter-spacing:1px;outline:none;transition:border-color .2s}
-.lic-input:focus{border-color:#f78166}
-.lic-input::placeholder{letter-spacing:0;color:#484f58}
-.lic-btn{width:100%;padding:12px;margin-top:12px;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;font-family:inherit}
-.lic-btn-primary{background:#f78166;color:#fff}
-.lic-btn-primary:hover{background:#e06b52;transform:translateY(-1px);box-shadow:0 4px 14px rgba(247,129,102,.3)}
-.lic-btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none!important;box-shadow:none!important}
-.lic-error{color:#f78166;font-size:13px;margin-top:10px;min-height:20px}
-.lic-success{color:#56d364;font-size:13px;margin-top:10px;min-height:20px}
-.lic-used{color:#8b949e;font-size:12px;margin-top:16px;padding-top:16px;border-top:1px solid #21262d}
-.lic-used a{color:#58a6ff;text-decoration:none}
-.lic-used a:hover{text-decoration:underline}
-.lic-dev{position:fixed;bottom:12px;right:16px;font-size:13px;color:#58a6ff;z-index:999999;cursor:pointer;padding:4px 8px;border-radius:4px;transition:color .2s}
-.lic-dev:hover{color:#c9d1d9;text-decoration:underline}
-.admin-panel{position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:20px}
-.admin-panel.show{display:flex}
-.admin-box{background:#1c2128;border:1px solid #30363d;border-radius:16px;padding:32px;max-width:480px;width:100%;max-height:90vh;overflow-y:auto}
-.admin-box h3{font-size:18px;color:#c9d1d9;margin-bottom:16px;text-align:center}
-.admin-field{display:block;width:100%;margin-bottom:12px}
-.admin-field label{display:block;font-size:12px;color:#8b949e;margin-bottom:4px}
-.admin-field input{width:100%;padding:10px 12px;border:1px solid #30363d;border-radius:8px;background:#0d1117;color:#c9d1d9;font-size:14px;font-family:monospace;outline:none}
-.admin-field input:focus{border-color:#58a6ff}
-.admin-key-result{background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:14px 16px;margin-top:12px;font-family:monospace;font-size:16px;color:#f78166;text-align:center;word-break:break-all;cursor:pointer;display:none;transition:all .2s}
 .admin-key-result:hover{background:#161b22}
-.admin-key-result.show{display:block}
-.admin-close{position:absolute;top:12px;right:16px;color:#8b949e;font-size:24px;cursor:pointer;background:none;border:none;font-family:inherit}
-.admin-close:hover{color:#c9d1d9}
-.admin-log{font-size:11px;color:#484f58;margin-top:12px;max-height:150px;overflow-y:auto}
-.admin-log div{padding:2px 0}
 </style>
 </head>
 <body>
@@ -130,7 +97,6 @@ h2{margin:0;font-size:18px}
     </div>
     <button class="btn-ghost" id="resetBtn" type="button">重置</button>
   </header>
-
   <section class="workspace">
     <aside class="panel controls-panel">
       <div class="upload-box" id="dropZone">
@@ -139,7 +105,6 @@ h2{margin:0;font-size:18px}
         <span>支持 PNG、JPG、WebP，也可拖拽或粘贴</span>
         <input id="fileInput" class="native-file" type="file" accept="image/*">
       </div>
-
       <div class="control-grid">
         <label class="field">
           <span>横向豆数</span>
@@ -177,17 +142,14 @@ h2{margin:0;font-size:18px}
           <input id="alphaCutoff" type="range" min="0" max="100" value="8">
         </label>
       </div>
-
       <div class="switch-row">
         <label><input id="showNumbers" type="checkbox" checked> 显示颜色编号</label>
         <label><input id="showLegend" type="checkbox" checked> 导出用量表</label>
       </div>
-
       <div class="actions">
         <button class="btn btn-primary" id="generateBtn">生成拼豆图纸</button>
         <button class="btn btn-secondary" id="downloadBtn" disabled>下载高清 PNG</button>
       </div>
-
       <div class="stats" id="stats">
         <div><span>尺寸</span><strong>-</strong></div>
         <div><span>豆数</span><strong>-</strong></div>
@@ -195,7 +157,6 @@ h2{margin:0;font-size:18px}
         <div><span>颜色</span><strong>-</strong></div>
       </div>
     </aside>
-
     <section class="preview-panel">
       <div class="preview-toolbar">
         <div>
@@ -219,7 +180,6 @@ h2{margin:0;font-size:18px}
     </section>
   </section>
 </main>
-
 <script>
 // ══════════════════════════════════════════════════════════════
 //  Palettes
@@ -287,12 +247,9 @@ const PALETTES = {
     ['46','荧光绿','#76ff03'],['47','荧光橙','#ff9100'],
   ],
 };
-
 function hexToRgb(h){const v=h.replace('#','');return{r:parseInt(v.slice(0,2),16),g:parseInt(v.slice(2,4),16),b:parseInt(v.slice(4,6),16)}}
-
 const PREPARED = {};
 for(const[k,v]of Object.entries(PALETTES)){PREPARED[k]=v.map(([c,n,h])=>({code:c,name:n,hex:h,...hexToRgb(h)}))}
-
 // ══════════════════════════════════════════════════════════════
 //  DOM
 // ══════════════════════════════════════════════════════════════
@@ -305,9 +262,7 @@ const showNumbersInput=$('showNumbers'),showLegendInput=$('showLegend');
 const generateBtn=$('generateBtn'),downloadBtn=$('downloadBtn'),resetBtn=$('resetBtn');
 const stats=$('stats'),statusText=$('statusText'),emptyState=$('emptyState');
 const zoomOut=$('zoomOut'),zoomIn=$('zoomIn'),zoomLabel=$('zoomLabel'),toast=$('toast');
-
 let srcImg=null,pattern=null,zoom=1,toastT=null;
-
 function toastMsg(m){toast.textContent=m;toast.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>toast.classList.remove('show'),2500)}
 function clamp(v,mi,ma){return Math.min(ma,Math.max(mi,v))}
 function setZoom(z){zoom=clamp(Number(z.toFixed(2)),.35,2.5);canvas.style.transform='scale('+zoom+')';zoomLabel.textContent=Math.round(zoom*100)+'%'}
@@ -319,25 +274,20 @@ function fitZoom(){
   setZoom(window.innerWidth<=680?Math.max(f,.45):1)
 }
 function totalBeads(){return Array.from(pattern.counts.values()).reduce((s,c)=>s+c,0)}
-
 function enhanceColor(c,str){
   const f=.55+str/100,avg=(c.r+c.g+c.b)/3;
   return{r:clamp(Math.round(avg+(c.r-avg)*f),0,255),g:clamp(Math.round(avg+(c.g-avg)*f),0,255),b:clamp(Math.round(avg+(c.b-avg)*f),0,255)}
 }
-
 function colorDist(a,b){
   const rm=(a.r+b.r)/2,r=a.r-b.r,g=a.g-b.g,bl=a.b-b.b;
   return Math.sqrt((2+rm/256)*r*r+4*g*g+(2+(255-rm)/256)*bl*bl)
 }
-
 function nearest(rgb,palette){
   let bC=palette[0],bS=Infinity;
   for(const c of palette){const s=colorDist(rgb,c);if(s<bS){bS=s;bC=c}}
   return bC
 }
-
 function textCol(r,g,b){return(r*299+g*587+b*114)/1000>155?'#17202a':'#ffffff'}
-
 // ══════════════════════════════════════════════════════════════
 //  Image loading
 // ══════════════════════════════════════════════════════════════
@@ -348,19 +298,16 @@ function readFile(file){
     r.onerror=()=>rej(new Error('文件读取失败'));r.readAsDataURL(file)
   })
 }
-
 async function handleFile(file){
   if(!file||!file.type.startsWith('image/'))return
   statusText.textContent='正在读取图片...';
   try{srcImg=await readFile(file);makePattern()}catch(e){statusText.textContent=e.message}
 }
-
 // ══════════════════════════════════════════════════════════════
 //  Core processing
 // ══════════════════════════════════════════════════════════════
 function makePattern(){
   if(!srcImg){statusText.textContent='请先上传一张图片。';return}
-  
   const tw=clamp(Number(gridWidthInput.value)||48,8,220);
   gridWidthInput.value=tw;
   const th=clamp(Math.round(tw*srcImg.height/srcImg.width),8,260);
@@ -368,16 +315,13 @@ function makePattern(){
   const strength=Number(colorStrengthInput.value);
   const cutoff=Number(alphaCutoffInput.value)/100;
   document.getElementById('strengthVal').textContent=strength+'%';
-  
   const sp=document.createElement('canvas');
   sp.width=tw;sp.height=th;
   const sx=sp.getContext('2d',{willReadFrequently:true});
   sx.imageSmoothingEnabled=true;sx.imageSmoothingQuality='high';
   sx.clearRect(0,0,tw,th);sx.drawImage(srcImg,0,0,tw,th);
-  
   const px=sx.getImageData(0,0,tw,th).data;
   const cells=[];const counts=new Map();
-  
   for(let y=0;y<th;y++){
     const row=[];
     for(let x=0;x<tw;x++){
@@ -392,31 +336,26 @@ function makePattern(){
     }
     cells.push(row)
   }
-  
   pattern={width:tw,height:th,cells,counts,palette,beadSize:Number(beadSizeInput.value)};
   draw();updateStats();fitZoom();
   emptyState.classList.add('hidden');
   downloadBtn.disabled=false;
   statusText.textContent='已生成拼豆点阵，可继续调节参数或下载图纸。'
 }
-
 // ══════════════════════════════════════════════════════════════
 //  Drawing
 // ══════════════════════════════════════════════════════════════
 function draw(exportMode){
   if(!pattern){ctx.clearRect(0,0,canvas.width,canvas.height);return}
-  
   const showLegend=exportMode?showLegendInput.checked:false;
   const cell=exportMode?28:clamp(Math.floor(760/pattern.width),10,24);
   const margin=exportMode?56:24;
   const legendW=showLegend?300:0;
   const w=margin*2+pattern.width*cell+legendW;
   const h=margin*2+pattern.height*cell;
-  
   canvas.width=w;canvas.height=h;
   ctx.fillStyle='#ffffff';ctx.fillRect(0,0,w,h);
   ctx.textAlign='center';ctx.textBaseline='middle';
-  
   for(let y=0;y<pattern.height;y++)for(let x=0;x<pattern.width;x++){
     const c=pattern.cells[y][x],px=margin+x*cell,py=margin+y*cell;
     ctx.fillStyle=c?c.hex:'#ffffff';ctx.fillRect(px,py,cell,cell);
@@ -426,7 +365,6 @@ function draw(exportMode){
       ctx.fillText(c.code,px+cell/2,py+cell/2)
     }
   }
-  
   // Grid
   const gm=gridModeInput.value;
   if(gm!=='none'){
@@ -444,15 +382,12 @@ function draw(exportMode){
       ctx.beginPath();ctx.moveTo(margin,margin+y*cell+.5);ctx.lineTo(ex,margin+y*cell+.5);ctx.stroke()
     }
   }
-  
   if(showLegend)drawLegend(margin+pattern.width*cell+36,margin,cell)
 }
-
 function drawLegend(x,y,cell){
   const entries=Array.from(pattern.counts.entries())
     .map(([code,count])=>({...pattern.palette.find(i=>i.code===code),count}))
     .sort((a,b)=>b.count-a.count);
-  
   ctx.textAlign='left';ctx.textBaseline='alphabetic';
   ctx.fillStyle='#17202a';ctx.font='700 22px "PingFang SC",sans-serif';ctx.fillText('颜色用量',x,y+6);
   ctx.font='14px sans-serif';ctx.fillStyle='#647084';
@@ -467,14 +402,12 @@ function drawLegend(x,y,cell){
   }
   ctx.textAlign='center';ctx.textBaseline='middle'
 }
-
 function updateStats(){
   const rw=(pattern.width*pattern.beadSize/10).toFixed(1);
   const rh=(pattern.height*pattern.beadSize/10).toFixed(1);
   const vals=[pattern.width+'×'+pattern.height,totalBeads()+'颗',rw+'×'+rh+' cm',pattern.counts.size+'色'];
   stats.querySelectorAll('strong').forEach((n,i)=>{n.textContent=vals[i]})
 }
-
 // ══════════════════════════════════════════════════════════════
 //  Download
 // ══════════════════════════════════════════════════════════════
@@ -487,7 +420,6 @@ function downloadPng(){
   toastMsg('✅ 图纸下载成功！');
   draw(false);fitZoom()
 }
-
 // ══════════════════════════════════════════════════════════════
 //  Reset
 // ══════════════════════════════════════════════════════════════
@@ -504,7 +436,6 @@ function resetAll(){
   stats.querySelectorAll('strong').forEach(n=>{n.textContent='-'});
   ctx.clearRect(0,0,canvas.width,canvas.height);setZoom(1)
 }
-
 // ══════════════════════════════════════════════════════════════
 //  Events
 // ══════════════════════════════════════════════════════════════
@@ -512,105 +443,23 @@ fileInput.addEventListener('change',e=>handleFile(e.target.files[0]));
 generateBtn.addEventListener('click',makePattern);
 downloadBtn.addEventListener('click',downloadPng);
 resetBtn.addEventListener('click',resetAll);
-
 [gridWidthInput,beadSizeInput,paletteSelect,gridModeInput,colorStrengthInput,alphaCutoffInput,showNumbersInput,showLegendInput]
   .forEach(el=>el.addEventListener('input',()=>{if(srcImg)makePattern()}));
-
 dropZone.addEventListener('dragover',e=>{e.preventDefault();e.stopPropagation();dropZone.classList.add('dragging')});
 dropZone.addEventListener('dragleave',()=>dropZone.classList.remove('dragging'));
 dropZone.addEventListener('drop',e=>{e.preventDefault();e.stopPropagation();dropZone.classList.remove('dragging');handleFile(e.dataTransfer.files[0])});
 window.addEventListener('dragover',e=>{e.preventDefault();dropZone.classList.add('dragging')});
 window.addEventListener('drop',e=>{e.preventDefault();dropZone.classList.remove('dragging');handleFile(e.dataTransfer.files[0])});
 window.addEventListener('paste',e=>{const f=Array.from(e.clipboardData?.files||[]).find(i=>i.type.startsWith('image/'));if(f)handleFile(f)});
-
 zoomOut.addEventListener('click',()=>setZoom(zoom-.1));
 zoomIn.addEventListener('click',()=>setZoom(zoom+.1));
 window.addEventListener('resize',()=>{if(pattern)fitZoom()});
-
 resetAll();
-
-// License System - onclick based
-const LS = 'p3rl3r_p1x_2024';
-function mkLic(oid){const s=LS+':'+String(oid).trim();let h=0;for(let i=0;i<s.length;i++){h=((h<<5)-h)+s.charCodeAt(i);h|=0}
-  const hex=Math.abs(h).toString(16).toUpperCase().padStart(8,'0');const id=String(oid).trim().padStart(4,'0').slice(-4)
-  return 'PD-'+hex.slice(0,4)+'-'+hex.slice(4,8)+'-'+id}
-function valLic(k){if(!k)return null;const key=k.trim().toUpperCase()
-  if(!/^PD-[A-F0-9]{4}-[A-F0-9]{4}-\d{4}$/.test(key))return null;const o=key.split('-')[3];return key===mkLic(o)?o:null}
-function gLic(){try{const r=sessionStorage.getItem('pd_license');return r?JSON.parse(r):null}catch{return null}}
-function sLic(s){try{sessionStorage.setItem('pd_license',JSON.stringify(s))}catch{}}
-function gUsed(){try{const r=localStorage.getItem('pd_used_keys');return r?JSON.parse(r):[]}catch{return[]}}
-function aUsed(k){const u=gUsed();if(!u.includes(k)){u.push(k);try{localStorage.setItem('pd_used_keys',JSON.stringify(u))}catch{}}}
-function isUnlocked(){const s=gLic();return s&&s.unlocked===true}
-function doUnlock(){const i=document.getElementById('licInput'),e=document.getElementById('licError'),s=document.getElementById('licSuccess')
-  e.textContent='';s.textContent='';const k=i.value.trim().toUpperCase()
-  if(!k){e.textContent='请输入密码';return}const o=valLic(k);if(!o){e.textContent='密码无效';return}
-  if(gUsed().includes(k)){e.textContent='此密码已被使用';return}
-  sLic({unlocked:true,key:k,orderId:o});aUsed(k)
-  s.textContent='解锁成功!';document.getElementById('lockScreen').classList.add('hidden');location.reload()}
-function formatLicInput(el){let v=el.value.toUpperCase().replace(/[^A-F0-9-]/g,'');const p=v.split('-')
-  if(p[0]==='PD'&&p.length>1){if(p[1]&&p[1].length>4){p[2]=(p[1].slice(4)+(p[2]||'')).slice(0,4);p[1]=p[1].slice(0,4)}
-    if(p[2]&&p[2].length>4){p[3]=(p[2].slice(4)+(p[3]||'')).slice(0,4);p[2]=p[2].slice(0,4)}
-    if(p[3]&&p[3].length>4)p[3]=p[3].slice(0,4);el.value=p.join('-')}else if(p[0]!=='PD')el.value=''}
-function openAdmin(){const ap=document.getElementById('adminPanel');ap.classList.add('show');document.getElementById('adminOrder').focus()}
-function closeAdmin(){document.getElementById('adminPanel').classList.remove('show')}
-function genKey(){const o=document.getElementById('adminOrder').value.trim()
-  if(!o||!/^\d+$/.test(o)){const r=document.getElementById('adminResult');r.textContent='请输入有效数字订单号';r.classList.add('show');return}
-  const key=mkLic(o);const r=document.getElementById('adminResult');r.textContent=key;r.classList.add('show')
-  const l=document.getElementById('adminLog');const d=document.createElement('div');d.textContent=new Date().toLocaleString()+' 订单'+o+'='+key;l.prepend(d)}
-function copyKey(el){const t=el.textContent;if(navigator.clipboard){navigator.clipboard.writeText(t).then(()=>{el.textContent='已复制!';setTimeout(()=>{el.textContent=t},1500)})}}
-function contactBuy(){document.getElementById('licError').textContent='请联系作者微信/QQ 获取密码'}
-// Init
-(function(){if(location.search.match(/[?&](dev|admin)/)){try{sessionStorage.setItem('pd_dev','1')}catch{}}const dv=(function(){try{return sessionStorage.getItem('pd_dev')==='1'}catch{return false}})();if(dv||isUnlocked()){document.getElementById('lockScreen').classList.add('hidden')}else{document.getElementById('lockScreen').classList.remove('hidden')}})();
 </script>
-<div class="lic-overlay" id="lockScreen">
-  <div class="lic-box">
-    <div class="logo">🧩</div>
-    <h2>拼豆像素画</h2>
-    <p class="sub">请输入密码解锁使用</p>
-    <input class="lic-input" id="licInput" type="text" placeholder="PD-XXXX-XXXX-XXXX" maxlength="19" autocomplete="off" spellcheck="false" oninput="formatLicInput(this)">
-    <button class="lic-btn lic-btn-primary" onclick="doUnlock()">🔓 解锁</button>
-    <div class="lic-error" id="licError"></div>
-    <div class="lic-success" id="licSuccess"></div>
-    <div class="lic-used" style="border:none;margin-top:12px;padding-top:8px">
-      <a href="#" onclick="openAdmin();return false" style="color:#58a6ff">🔧 管理员入口</a>
-    </div>
-    <div class="lic-used">
-      <span>未购买？</span>
-      <a href="#" onclick="contactBuy();return false">联系购买 →</a>
-    </div>
-  </div>
 </div>
-<div class="admin-panel" id="adminPanel">
-  <button class="admin-close" onclick="closeAdmin()">&times;</button>
-  <div class="admin-box">
-    <h3>🔑 管理员 · 密码生成器</h3>
-    <div class="admin-field">
-      <label>订单号（纯数字）</label>
-      <input id="adminOrder" type="text" placeholder="例如 0001" maxlength="10" onkeydown="if(event.key==='Enter')genKey()">
-    </div>
-    <button class="lic-btn lic-btn-primary" onclick="genKey()" style="margin-bottom:12px">生成密码</button>
-    <div class="admin-key-result" id="adminResult" onclick="copyKey(this)"></div>
-    <div class="admin-log" id="adminLog"></div>
-  </div>
-</div>
-<div class="lic-dev" id="devBtn" onclick="openAdmin()">🔧</div>
-</div>
-<div class="lic-dev" id="devBtn" title="管理员入口（Ctrl+Shift+K）">🔧</div>
+
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
