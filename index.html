@@ -511,18 +511,6 @@ function doUnlock(){const i=document.getElementById('licInput'),e=document.getEl
   if(gUsed().includes(k)){e.textContent='此密码已被使用';return}
   sLic({unlocked:true,key:k,orderId:o});aUsed(k)
   s.textContent='解锁成功!';document.getElementById('lockScreen').classList.add('hidden');location.reload()}
-function formatLicInput(el){
-  let v = el.value.toUpperCase().replace(/[^A-Z0-9-]/g, '');
-  const p = v.split('-');
-  if (p[0] === 'PD' && p.length > 1) {
-    if (p[1] && p[1].length > 4) { p[2] = (p[1].slice(4) + (p[2] || '')).slice(0, 4); p[1] = p[1].slice(0, 4); }
-    if (p[2] && p[2].length > 4) { p[3] = (p[2].slice(4) + (p[3] || '')).slice(0, 4); p[2] = p[2].slice(0, 4); }
-    if (p[3] && p[3].length > 4) p[3] = p[3].slice(0, 4);
-    el.value = p.join('-');
-  } else {
-    el.value = v;
-  }
-}
 function openAdmin(){const ap=document.getElementById('adminPanel');ap.classList.add('show');document.getElementById('adminOrder').focus()}
 function closeAdmin(){document.getElementById('adminPanel').classList.remove('show')}
 function genKey(){const o=document.getElementById('adminOrder').value.trim()
@@ -541,7 +529,7 @@ function contactBuy(){document.getElementById('licError').textContent='请联系
     <div class="logo">🧩</div>
     <h2>拼豆像素画</h2>
     <p class="sub">请输入密码解锁使用</p>
-    <input class="lic-input" id="licInput" type="text" placeholder="PD-XXXX-XXXX-XXXX" maxlength="19" autocomplete="off" spellcheck="false" oninput="formatLicInput(this)">
+    <input class="lic-input" id="licInput" type="text" placeholder="PD-XXXX-XXXX-XXXX" maxlength="19" autocomplete="off" spellcheck="false">
     <button class="lic-btn lic-btn-primary" onclick="doUnlock()">🔓 解锁</button>
     <div class="lic-error" id="licError"></div>
     <div class="lic-success" id="licSuccess"></div>
